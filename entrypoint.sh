@@ -68,17 +68,17 @@ function validate_target_and_destination {
     if [ -z "$INPUT_SOURCE" ] && [ "$INPUT_TARGET" ]
     then
       echo ""
-      echo "Error: Requires source and target destinations."
+      echo "Error: Requires source and target."
       usage_docs
       exit 1
     fi
 
     # Verify at least one source or target have s3:// as prefix
     # if [[] || []]
-    if [[ ! "$INPUT_SOURCE" =~ "^s3://" ]] || [[ ! "$INPUT_TARGET" =~ "^s3://" ]]
+    if [[ ! "$INPUT_SOURCE" =~ ^s3:// ]] && [[ ! "$INPUT_TARGET" =~ ^s3:// ]]
     then
       echo ""
-      echo "Error: Source destination or target destination must have s3:// as prefix."
+      echo "Error: Source or target must have s3:// as prefix."
       usage_docs
       exit 1
     fi
@@ -86,15 +86,15 @@ function validate_target_and_destination {
     # Require source
     if [ -z "$INPUT_SOURCE" ]
     then
-      echo "Error: Requires source and target destinations."
+      echo "Error: Requires source."
       usage_docs
       exit 1
     fi
 
-    # Verify at least one source or target have s3:// as prefix
-    if [[ $INPUT_SOURCE != *"s3://"* ]]
+    # Verify at source has s3:// as prefix
+    if [[ ! $INPUT_SOURCE =~ ^s3:// ]]
     then
-      echo "Error: Source destination must have s3:// as prefix."
+      echo "Error: Source must have s3:// as prefix."
       usage_docs
       exit 1
     fi
