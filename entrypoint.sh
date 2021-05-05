@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function usage_docs {
   echo ""
   echo "- uses: keithweaver/aws-s3-github-action@master"
