@@ -29,3 +29,6 @@ inputs:
   metadata_service_timeout:
     description: "The number of seconds to wait until the metadata service request times out. More info: https://docs.aws.amazon.com/cli/latest/reference/configure/"
     required: false
+  aws_region:
+    description: "The AWS region"
+    required: false

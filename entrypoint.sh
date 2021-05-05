@@ -2,7 +2,7 @@
 
 function usage_docs {
   echo ""
-  echo "- uses: keithweaver/aws-s3-github-action@master"
+  echo "- uses: gsaraf/aws-s3-github-action@master"
   echo "  with:"
   echo "    command: cp"
   echo "    source: ./local_file.txt"
@@ -11,41 +11,40 @@ function usage_docs {
   echo "    aws_secret_access_key: \${{ secret.AWS_SECRET_ACCESS_KEY }}"
   echo ""
 }
-function get_profile {
-  PROFILE=""
-  if [ -z "$INPUT_PROFILE" ]
-  then
-    echo "Using the profile :: [$INPUT_PROFILE]"
-    PROFILE=" --profile=$INPUT_PROFILE"
-  fi
-}
 function get_configuration_settings {
   if [ -z "$INPUT_AWS_ACCESS_KEY_ID" ]
   then
     echo "AWS Access Key Id was not found. Using configuration from previous step."
   else
-    aws configure set aws_access_key_id "$INPUT_AWS_ACCESS_KEY_ID $PROFILE"
+    aws configure set aws_access_key_id "$INPUT_AWS_ACCESS_KEY_ID"
   fi
 
   if [ -z "$INPUT_AWS_SECRET_ACCESS_KEY" ]
   then
     echo "AWS Secret Access Key was not found. Using configuration from previous step."
   else
-    aws configure set aws_secret_access_key "$INPUT_AWS_SECRET_ACCESS_KEY" "$PROFILE"
+    aws configure set aws_secret_access_key "$INPUT_AWS_SECRET_ACCESS_KEY"
   fi
 
   if [ -z "$INPUT_AWS_SESSION_TOKEN" ]
   then
     echo "AWS Session Token was not found. Using configuration from previous step."
   else
-    aws configure set aws_session_token "$INPUT_AWS_SESSION_TOKEN" "$PROFILE"
+    aws configure set aws_session_token "$INPUT_AWS_SESSION_TOKEN"
   fi
 
   if [ -z "$INPUT_METADATA_SERVICE_TIMEOUT" ]
   then
     echo "Metadata service timeout was not found. Using configuration from previous step."
   else
-    aws configure set metadata_service_timeout "$INPUT_METADATA_SERVICE_TIMEOUT" "$PROFILE"
+    aws configure set metadata_service_timeout "$INPUT_METADATA_SERVICE_TIMEOUT"
+  fi
+
+  if [ -z "$INPUT_AWS_REGION" ]
+  then
+    echo "AWS region not found."
+  else
+    aws configure set region "$INPUT_AWS_REGION"
   fi
 }
 function get_command {
@@ -61,21 +60,21 @@ function get_command {
     COMMAND=$INPUT_COMMAND
   fi
 }
-function validate_target_and_destination {
+function validate_source_and_destination {
   if [ "$COMMAND" == "cp" ] || [ "$COMMAND" == "mv" ] || [ "$COMMAND" == "sync" ]
   then
     # Require source and target
-    if [ -z "$INPUT_SOURCE" ] && [ "$INPUT_TARGET" ]
+    if [ -z "$INPUT_SOURCE" ] && [ "$INPUT_DESTINATION" ]
     then
       echo ""
-      echo "Error: Requires source and target."
+      echo "Error: Requires source and destination."
       usage_docs
       exit 1
     fi
 
     # Verify at least one source or target have s3:// as prefix
     # if [[] || []]
-    if [[ ! "$INPUT_SOURCE" =~ ^s3:// ]] && [[ ! "$INPUT_TARGET" =~ ^s3:// ]]
+    if [[ ! "$INPUT_SOURCE" =~ ^s3:// ]] && [[ ! "$INPUT_DESTINATION" =~ ^s3:// ]]
     then
       echo ""
       echo "Error: Source or target must have s3:// as prefix."
@@ -101,15 +100,14 @@ function validate_target_and_destination {
   fi
 }
 function main {
-  get_profile
   get_configuration_settings
   get_command
-  validate_target_and_destination
+  validate_source_and_destination
   if [ "$COMMAND" == "cp" ] || [ "$COMMAND" == "mv" ] || [ "$COMMAND" == "sync" ]
   then
-    "aws s3 $COMMAND $INPUT_SOURCE $INPUT_TARGET $INPUT_FLAGS"
+    aws s3 "$COMMAND" "$INPUT_SOURCE" "$INPUT_DESTINATION"
   else
-    "aws s3 $COMMAND $INPUT_SOURCE $INPUT_FLAGS"
+    aws s3 "$COMMAND" "$INPUT_SOURCE"
   fi
 }
 

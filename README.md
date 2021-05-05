@@ -2,8 +2,10 @@
 
 Upload, download, or list files/folders through Github Actions.
 
+Based on keithweaver/aws-s3-github-action, with bugfixes.
+
 ```
-- uses: keithweaver/aws-s3-github-action@master
+- uses: gsaraf/aws-s3-github-action@master
   with:
     command: cp
     source: ./local_file.txt
