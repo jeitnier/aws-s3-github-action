@@ -24,35 +24,28 @@ function get_configuration_settings {
   then
     echo "AWS Access Key Id was not found. Using configuration from previous step."
   else
-    aws configure set aws_access_key_id $INPUT_AWS_ACCESS_KEY_ID $PROFILE
+    aws configure set aws_access_key_id "$INPUT_AWS_ACCESS_KEY_ID $PROFILE"
   fi
 
   if [ -z "$INPUT_AWS_SECRET_ACCESS_KEY" ]
   then
     echo "AWS Secret Access Key was not found. Using configuration from previous step."
   else
-    aws configure set aws_secret_access_key $INPUT_AWS_SECRET_ACCESS_KEY $PROFILE
+    aws configure set aws_secret_access_key "$INPUT_AWS_SECRET_ACCESS_KEY" "$PROFILE"
   fi
 
   if [ -z "$INPUT_AWS_SESSION_TOKEN" ]
   then
     echo "AWS Session Token was not found. Using configuration from previous step."
   else
-    aws configure set aws_session_token $INPUT_AWS_SESSION_TOKEN $PROFILE
-  fi
-
-  if [ -z "$INPUT_AWS_SESSION_TOKEN" ]
-  then
-    echo "AWS Session Token was not found. Using configuration from previous step."
-  else
-    aws configure set aws_session_token $INPUT_AWS_SESSION_TOKEN $PROFILE
+    aws configure set aws_session_token "$INPUT_AWS_SESSION_TOKEN" "$PROFILE"
   fi
 
   if [ -z "$INPUT_METADATA_SERVICE_TIMEOUT" ]
   then
     echo "Metadata service timeout was not found. Using configuration from previous step."
   else
-    aws configure set metadata_service_timeout $INPUT_METADATA_SERVICE_TIMEOUT $PROFILE
+    aws configure set metadata_service_timeout "$INPUT_METADATA_SERVICE_TIMEOUT" "$PROFILE"
   fi
 }
 function get_command {
@@ -69,10 +62,10 @@ function get_command {
   fi
 }
 function validate_target_and_destination {
-  if [ "$COMMAND" == "cp" || "$COMMAND" == "mv" || "$COMMAND" == "sync" ]
+  if [ "$COMMAND" == "cp" ] || [ "$COMMAND" == "mv" ] || [ "$COMMAND" == "sync" ]
   then
     # Require source and target
-    if [ -z "$INPUT_SOURCE" && "$INPUT_TARGET" ]
+    if [ -z "$INPUT_SOURCE" ] && [ "$INPUT_TARGET" ]
     then
       echo ""
       echo "Error: Requires source and target destinations."
@@ -82,7 +75,7 @@ function validate_target_and_destination {
 
     # Verify at least one source or target have s3:// as prefix
     # if [[] || []]
-    if [ $INPUT_SOURCE != *"s3://"* ] || [ $INPUT_TARGET != *"s3://"* ]
+    if [[ ! "$INPUT_SOURCE" =~ "^s3://" ]] || [[ ! "$INPUT_TARGET" =~ "^s3://" ]]
     then
       echo ""
       echo "Error: Source destination or target destination must have s3:// as prefix."
@@ -112,11 +105,11 @@ function main {
   get_configuration_settings
   get_command
   validate_target_and_destination
-  if [ "$COMMAND" == "cp" || "$COMMAND" == "mv" || "$COMMAND" == "sync" ]
+  if [ "$COMMAND" == "cp" ] || [ "$COMMAND" == "mv" ] || [ "$COMMAND" == "sync" ]
   then
-    "aws s3 $command $INPUT_SOURCE $INPUT_TARGET $INPUT_FLAGS"
+    "aws s3 $COMMAND $INPUT_SOURCE $INPUT_TARGET $INPUT_FLAGS"
   else
-    "aws s3 $command $INPUT_SOURCE $INPUT_FLAGS"
+    "aws s3 $COMMAND $INPUT_SOURCE $INPUT_FLAGS"
   fi
 }
 
