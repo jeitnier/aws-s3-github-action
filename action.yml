@@ -1,6 +1,6 @@
-name: 'AWS S3 Github Action'
+name: 'AWS S3 Github Action - Supported'
 description: 'This action allows you to use commands similar to AWS S3 CLI.'
-author: 'KeithWeaver'
+author: 'gsaraf'
 branding:
   icon: 'upload-cloud'
   color: 'red'
