@@ -105,9 +105,9 @@ function main {
   validate_source_and_destination
   if [ "$COMMAND" == "cp" ] || [ "$COMMAND" == "mv" ] || [ "$COMMAND" == "sync" ]
   then
-    aws s3 "$COMMAND" "$INPUT_SOURCE" "$INPUT_DESTINATION" "$INPUT_LOG_FILE"
+    aws s3 "$COMMAND" "$INPUT_SOURCE" "$INPUT_DESTINATION" &> "$INPUT_LOG_FILE"
   else
-    aws s3 "$COMMAND" "$INPUT_SOURCE" "$INPUT_LOG_FILE"
+    aws s3 "$COMMAND" "$INPUT_SOURCE" &> "$INPUT_LOG_FILE"
   fi
 }
 
