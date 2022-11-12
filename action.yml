@@ -32,3 +32,6 @@ inputs:
   aws_region:
     description: "The AWS region"
     required: false
+  log_file:
+    description: "Where to log output of the command"
+    required: true
