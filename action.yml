@@ -34,4 +34,4 @@ inputs:
     required: false
   log_file:
     description: "Where to log output of the command"
-    required: true
+    required: false
